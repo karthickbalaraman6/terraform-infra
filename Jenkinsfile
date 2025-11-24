@@ -1,34 +1,25 @@
 pipeline {
     agent any
 
-    options {
-        skipDefaultCheckout(true)
-    }
-
     environment {
-        AWS_ACCESS_KEY_ID     = credentials('aws-access-key')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
-        AWS_DEFAULT_REGION    = "us-east-1"
+        AWS_ACCESS_KEY_ID     = credentials('aws-access')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret')
+        AWS_REGION            = 'ap-south-1'
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/master']],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/karthickbalaraman6/terraform-infra.git',
-                        credentialsId: '8b9c3d34-20c9-4e46-b8eb-5bd117cf0d47'
-                    ]]
-                ])
+                checkout scm
             }
         }
 
-        stage('Terraform Init') {
+        stage('Terraform Init (Migrate Backend State)') {
             steps {
-                sh 'terraform init -reconfigure'
+                sh """
+                    terraform init -migrate-state || terraform init -reconfigure
+                """
             }
         }
 
@@ -40,15 +31,25 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                sh 'terraform plan -out=tfplan'
+                sh """
+                    terraform init -reconfigure
+                    terraform plan -out=tfplan
+                """
             }
         }
 
         stage('Terraform Apply') {
+            when {
+                expression { return params.APPLY == true }
+            }
             steps {
-                sh 'terraform apply -auto-approve tfplan'
+                sh "terraform apply -auto-approve tfplan"
             }
         }
+    }
+
+    parameters {
+        booleanParam(name: 'APPLY', defaultValue: false, description: 'Apply Terraform?')
     }
 
     post {
