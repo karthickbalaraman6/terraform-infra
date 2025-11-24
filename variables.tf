@@ -1,43 +1,27 @@
 variable "aws_region" {
-description = "AWS region"
-type = string
-default = "us-east-1"
+  default = "ap-south-1"
 }
 
+variable "aws_access_key" {}
+variable "aws_secret_key" {}
 
 variable "vpc_cidr" {
-type = string
-default = "10.0.0.0/16"
+  default = "10.0.0.0/16"
 }
-
 
 variable "public_subnet_cidr" {
-type = string
-default = "10.0.1.0/24"
+  default = "10.0.1.0/24"
 }
 
-
-variable "allowed_cidr" {
-description = "CIDR allowed for SSH (your IP)"
-type = string
-default = "54.91.49.109/32" # change to your IP for security
+variable "private_subnet1_cidr" {
+  default = "10.0.2.0/24"
 }
 
+variable "private_subnet2_cidr" {
+  default = "10.0.3.0/24"
+}
 
 variable "key_name" {
-type = string
-default = "realubuntu1" # CHANGE ME to your EC2 key pair name
-}
-
-
-variable "instance_type" {
-type = string
-default = "t3.micro"
-}
-
-
-variable "db_password" {
-description = "RDS master password"
-type = string
-sensitive = true
+  description = "EC2 Key pair name"
+  default     = "terraform-key"
 }

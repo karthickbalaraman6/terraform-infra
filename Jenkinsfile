@@ -2,12 +2,16 @@ pipeline {
     agent any
 
     environment {
-        AWS_ACCESS_KEY_ID     = credentials('aws-access-key')
+        AWS_ACCESS_KEY_ID     = credentials('aws-key-id')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
-        AWS_DEFAULT_REGION    = "us-east-1"
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
         stage('Terraform Init') {
             steps {
@@ -29,8 +33,7 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                input message: "Apply changes?"
-                sh 'terraform apply -auto-approve'
+                sh 'terraform apply -auto-approve tfplan'
             }
         }
     }
