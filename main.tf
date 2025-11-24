@@ -64,10 +64,59 @@ cidr_blocks = ["0.0.0.0/0"]
 }
 }
 
+#RDS instance
+resource "aws_db_instance" "postgres" {
+  identifier              = "my-postgres-db"
+  allocated_storage       = 20
+  engine                  = "postgres"
+  engine_version          = "15.3"
+  instance_class          = "db.t3.micro"
+  username                = "admin"
+  password                = "Admin12345"
+  db_subnet_group_name    = aws_db_subnet_group.db_subnet.id
+  vpc_security_group_ids  = [aws_security_group.rds_sg.id]
+  skip_final_snapshot     = true
+}
+
+#RDS Subnet
+resource "aws_db_subnet_group" "db_subnet" {
+  name       = "db-subnet-group"
+  subnet_ids = [aws_subnet.private1.id, aws_subnet.private2.id]
+}
+
+#Security Group for RDS
+
+resource "aws_security_group" "rds_sg" {
+  name        = "rds-security-group"
+  description = "Allow DB access from EC2"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    security_groups = [aws_security_group.ec2_sg.id]  # EC2 SG can access DB
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+#s3
+resource "aws_s3_bucket" "artifacts" {
+  bucket = "terraform-bucket-27987"
+  force_destroy = true
+}
+
+
 
 # EC2 instance with user_data to install nginx
 resource "aws_instance" "web" {
-ami = data.aws_ami.amazon_linux.id
+ami = data.aws_ami.ami-0c398cb65a93047f2.id
 tags = {
   Name = "Terraform-EC2"
 }
