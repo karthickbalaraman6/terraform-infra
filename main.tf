@@ -166,13 +166,3 @@ EOF
 
   tags = { Name = "Terraform-EC2" }
 }
-
-############################################
-# S3 BUCKET
-############################################
-resource "aws_s3_bucket" "artifacts" {
-  bucket        = "terraform-bucket-27987"
-  force_destroy = true
-
-  tags = { Name = "tf-artifacts-bucket" }
-}

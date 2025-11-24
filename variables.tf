@@ -23,5 +23,5 @@ variable "private_subnet2_cidr" {
 
 variable "key_name" {
   description = "EC2 Key pair name"
-  default     = "terraform-key"
+  default     = "realubuntu"
 }
