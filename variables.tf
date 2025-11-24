@@ -3,7 +3,7 @@ variable "aws_region" {
 }
 
 variable "aws-access-key" {}
-variable "ws-secret-key" {}
+variable "aws-secret-key" {}
 
 variable "vpc_cidr" {
   default = "10.0.0.0/16"
