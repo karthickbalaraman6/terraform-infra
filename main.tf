@@ -68,4 +68,7 @@ cidr_blocks = ["0.0.0.0/0"]
 # EC2 instance with user_data to install nginx
 resource "aws_instance" "web" {
 ami = data.aws_ami.amazon_linux.id
+tags = {
+  Name = "Terraform-EC2"
+}
 }
